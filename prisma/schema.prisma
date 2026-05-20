@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  usuario_id     Int        @id @default(autoincrement())
+  usuario_login  String     @unique(map: "idx_login_unico") @db.VarChar(45)
+  usuario_senha  String     @db.VarChar(255)
+  usuario_status StatusEnum @default(Ativo)
+  clientes       Cliente[]
+
+  @@map("usuario")
+}
+
+model Cliente {
+  cliente_id       Int        @id @default(autoincrement())
+  cliente_nome     String     @db.VarChar(45)
+  cliente_idade    Int
+  cliente_genero   String     @db.VarChar(45)
+  cliente_cpf      String     @unique(map: "idx_cpf_unico") @db.VarChar(45)
+  cliente_telefone String     @db.VarChar(45)
+  cliente_status   StatusEnum @default(Ativo)
+  usuario_id       Int
+  quarto_id        Int?
+  usuario          Usuario    @relation(fields: [usuario_id], references: [usuario_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cliente_usuario")
+
+  @@index([cliente_status, quarto_id], map: "idx_status_quarto")
+  @@index([usuario_id], map: "fk_cliente_usuario_idx")
+  @@map("cliente")
+}
+
+enum StatusEnum {
+  Ativo
+  Inativo
+}

@@ -1,0 +1,9 @@
+services:
+  hotel-cliente:
+    build: .
+    container_name: hotel-cliente
+    ports:
+      - "9531:9531"
+    env_file:
+      - .env
+    restart: always
